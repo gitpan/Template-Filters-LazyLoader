@@ -3,22 +3,24 @@ package Template::Filters::LazyLoader;
 use strict;
 use base qw/Class::Accessor::Fast/;
 use File::Spec;
-use Module::Recursive::Require;
+use Carp;
+use Module::Recursive::Require 0.04;
+use UNIVERSAL::require;
 
 use vars qw/$VERSION/;
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 __PACKAGE__->mk_accessors(
     qw/
         static_filter_prefix  filters  base_pkg
-        dynamic_filter_prefix lib_path 
+        pkg dynamic_filter_prefix lib_path 
      /
 );
 
 sub load {
     my $s = shift;
 
-    die 'You must set base_pkg' unless $s->base_pkg();
+    croak 'You must set base_pkg or pkg and can not use both together.' if( ( !$s->base_pkg() && !$s->pkg ) || ( $s->base_pkg() && $s->pkg) );
     
     my $recursive_args = {};
     if ( $s->lib_path() ){
@@ -34,8 +36,16 @@ sub load {
     }
 
     my $r = Module::Recursive::Require->new( $recursive_args ); 
-    my @packages = $r->require_by( $s->base_pkg() );
-    
+    my @packages = () ;
+
+    if ( $s->base_pkg() ) {
+        @packages = $r->require_of( $s->base_pkg() );
+    }
+    else {
+        $s->pkg()->require() or croak $@;
+        $packages[0] = $s->pkg();
+    }
+
     no strict;
     READ_PKG_LOOP:
     for my $filter_pkg ( @packages ) {
@@ -80,7 +90,17 @@ automatically from those packages.
 =head1 SYNOPSYS
 
     my $lazy = Template::Filters::LazyLoader->new();
-    $lazy->base_pkg('My::Custom::Filters');
+
+    # You must use base_pkg or pkg , do not use both.
+
+    # Case using base_pkg
+    # read all packages which using My::Custom::Filters as base module .
+    # e.g. ( My::Custom::Filters::One , My::Custom::Filters::Two , # My::Custom::Filters::A::Three ... )
+    $lazy->base_pkg('My::Custom::Filters'); 
+
+    # case using pkg
+    # read My::Custom::Filter package only.
+    $lazy->pkg( 'My::Custom::Filter');
     
     # below methods are optional. I never use it.
     #$lazy->static_filter_prefix( 'fs_' ); # default is fs_
@@ -171,7 +191,11 @@ even different package.
 
 =head2 base_pkg
 
-You need to set your parent package!!!
+set your parent package!!!
+
+=head2 pkg
+
+set your package which contain filter modules.
 
 =head2 load
 
