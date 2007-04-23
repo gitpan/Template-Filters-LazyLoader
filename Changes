@@ -1,3 +1,5 @@
+0.03 2007/04/23 21:00
+    - add pre require modules.
 0.02 2007/04/22 22:50
     - use require_of() instead of require_by() when using
       Module::Recursive::Require because of deprecation.
