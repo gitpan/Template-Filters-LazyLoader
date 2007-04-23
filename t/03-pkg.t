@@ -1,5 +1,5 @@
 use strict;
-use Findbin;
+use FindBin;
 use File::Spec;
 use lib ( 
     File::Spec->catfile( $FindBin::Bin , 'lib' ) ,

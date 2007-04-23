@@ -12,9 +12,6 @@ WriteMakefile(
         'Template'                      => 0,
         'Test::Differences'             => 0,
         'Test::Exception'               => 0,
-        'Findbin'                       => 0,
-        'File::Spec'                    => 0,
-        'Carp'                          => 0,
     },
     clean               => { FILES => 'Template-Filters-LazyLoader-*' },
 
