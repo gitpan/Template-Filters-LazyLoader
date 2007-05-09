@@ -8,19 +8,19 @@ use Module::Recursive::Require 0.04;
 use UNIVERSAL::require;
 
 use vars qw/$VERSION/;
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 __PACKAGE__->mk_accessors(
     qw/
         static_filter_prefix  filters  base_pkg
-        pkg dynamic_filter_prefix lib_path 
+        pkg pkgs dynamic_filter_prefix lib_path 
      /
 );
 
 sub load {
     my $s = shift;
 
-    croak 'You must set base_pkg or pkg and can not use both together.' if( ( !$s->base_pkg() && !$s->pkg ) || ( $s->base_pkg() && $s->pkg) );
+    croak 'You must set base_pkg or pkg or pkgs.' if( !$s->base_pkg() && !$s->pkg && !$s->pkgs );
     
     my $recursive_args = {};
     if ( $s->lib_path() ){
@@ -40,6 +40,12 @@ sub load {
 
     if ( $s->base_pkg() ) {
         @packages = $r->require_of( $s->base_pkg() );
+    }
+    elsif( $s->pkgs() ) {
+        for my $pkg ( @{ $s->pkgs() } ) {
+            $pkg->require() or croak $@;
+        }
+        @packages = @{ $s->pkgs() } ;
     }
     else {
         $s->pkg()->require() or croak $@;
@@ -101,7 +107,10 @@ automatically from those packages.
     # case using pkg
     # read My::Custom::Filter package only.
     $lazy->pkg( 'My::Custom::Filter');
-    
+   
+    # case using pkgs
+    $lazy->pkgs( [qw/My::Filter1 My::Filter2/] );
+
     # below methods are optional. I never use it.
     #$lazy->static_filter_prefix( 'fs_' ); # default is fs_
     #$laxy->dynamic_filter_prefix( fd_' ); # default is fd_
@@ -196,6 +205,10 @@ set your parent package!!!
 =head2 pkg
 
 set your package which contain filter modules.
+
+=head2 pkgs
+
+set your pakcages as array ref.
 
 =head2 load
 

@@ -13,6 +13,7 @@ WriteMakefile(
         'Test::Differences'             => 0,
         'Test::Exception'               => 0,
     },
+    dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Template-Filters-LazyLoader-*' },
 
 );

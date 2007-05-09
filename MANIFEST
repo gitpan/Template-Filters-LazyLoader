@@ -12,3 +12,4 @@ t/00-compile.t
 t/01-pod-coverage.t
 t/02-template-filters-lazyloader.t
 t/03-pkg.t
+META.yml                                 Module meta-data (added by MakeMaker)

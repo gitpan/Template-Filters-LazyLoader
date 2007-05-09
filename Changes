@@ -1,3 +1,6 @@
+0.05 2007/05/09 15:42
+    - add pkgs method.
+
 0.04 2007/04/23 21:40
     - use FindBin... not use Findbin... sorry...
 

@@ -11,18 +11,10 @@ use Test::Exception;
 use_ok( 'Template::Filters::LazyLoader' );
 
 
-# no pkg or base_pkg test
+# no pkg or base_pkg or no pkgs test
 {
     my $lazy = Template::Filters::LazyLoader->new();
-   throws_ok { $lazy->load() }  qr/You must set base_pkg or pkg and can not use both together\./ , 'please die' ;
-}
-
-# both
-{
-   my $lazy = Template::Filters::LazyLoader->new();
-   $lazy->pkg('xxx');
-   $lazy->base_pkg('xxx');
-   throws_ok { $lazy->load() }  qr/You must set base_pkg or pkg and can not use both together\./ , 'please die' ;
+   throws_ok { $lazy->load() }  qr/You must set base_pkg or pkg or pkgs\./ , 'please die' ;
 }
 
 # set not exsisting package.
